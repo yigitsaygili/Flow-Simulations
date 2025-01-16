@@ -17,4 +17,5 @@ The Curl Gradient:
 Developed with the help of:
 
 https://medium.com/swlh/create-your-own-lattice-boltzmann-simulation-with-python-8759e8b53b1c
+
 https://www.youtube.com/watch?v=JFWqCQHg-Hs

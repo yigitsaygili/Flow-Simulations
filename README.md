@@ -13,6 +13,7 @@ The Curl Gradient:
 
 ![curl_grad](https://github.com/user-attachments/assets/0b0f5a18-fdc0-43ef-9b31-bcadb710dc28)
 
+The cylinder can be replaced with any other arbitrary shaped obstacle as long as it is defined in grid format.
 
 Developed with the help of:
 

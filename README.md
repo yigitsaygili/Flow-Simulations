@@ -11,9 +11,10 @@ The Velocity Gradient:
 
 The Curl Gradient:
 
-![velo_grad](https://github.com/user-attachments/assets/dcce8200-1854-48b5-b20a-020ddd4671a5)
+![curl_grad](https://github.com/user-attachments/assets/0b0f5a18-fdc0-43ef-9b31-bcadb710dc28)
 
 
 Developed with the help of:
+
 https://medium.com/swlh/create-your-own-lattice-boltzmann-simulation-with-python-8759e8b53b1c
 https://www.youtube.com/watch?v=JFWqCQHg-Hs

@@ -29,7 +29,7 @@ The flow is forming boundary layers close to solid wall boundary conditions as a
 
 Velocity Gradient and Boundary Layer Formation:
 
-![periodic_pipe](https://github.com/user-attachments/assets/911b8db7-1c7a-420a-b169-22683728a24b)
+![periodic_pipe](https://github.com/user-attachments/assets/d836f719-209c-4a04-81ee-80877f40d8b6)
 
 Developed with the help of:
 

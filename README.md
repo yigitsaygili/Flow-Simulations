@@ -1,4 +1,6 @@
-# Lattice-Boltzmann-Fluid-Simulation
+# 2D Fluid Simulatons in Python
+
+## Lattice-Boltzmann-Fluid-Simulation
 A 2D Fluid Simulation Using Lattice Boltzmann Method
 
 A script designed to simulate fluid flow around a cylinder utilizing the Lattice Boltzmann method, an efficient and straightforward approach for fluid dynamics simulation. Rather than directly solving the Navier-Stokes equations, this method models the behavior of microscopic particles on a lattice through streaming and collision processes.
@@ -20,3 +22,6 @@ Developed with the help of:
 https://medium.com/swlh/create-your-own-lattice-boltzmann-simulation-with-python-8759e8b53b1c
 
 https://www.youtube.com/watch?v=JFWqCQHg-Hs
+
+
+## Pressure Driven Internal Pipe Flow

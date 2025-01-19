@@ -31,3 +31,7 @@ Velocity Gradient and Boundary Layer Formation:
 
 ![periodic_pipe](https://github.com/user-attachments/assets/911b8db7-1c7a-420a-b169-22683728a24b)
 
+Developed with the help of:
+
+https://www.youtube.com/watch?v=PtfAPqIDaMI
+

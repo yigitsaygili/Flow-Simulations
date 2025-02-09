@@ -35,3 +35,17 @@ Developed with the help of:
 
 https://www.youtube.com/watch?v=PtfAPqIDaMI
 
+
+## Airfoil Generation with Joukowsky Transformation
+Joukowsky airfoils are a kind of airfoils around which the transform is employed to solve for the two-dimensional potential flow in aerodynamics. Applying the Joukowsky transform to a circle creates a Joukowsky airfoil in the complex plane. The shape of the resulting airfoil can be altered by changing the coordinates of the circle's center.
+
+By applying the Joukowski mapping to a circle in the Argand diagram, one may easily represent the cross section of an airfoil. Except for the locations where the complex derivative is 0, the map is conformal. A number of airfoil forms can be created by dragging the center of the circle, but it must pass through one of these points and either enclose or pass through the other.
+
+Pressure Disrtibution:
+
+![juk_air](https://github.com/user-attachments/assets/835d7728-ebc8-42be-9fa1-1b321ce75073)
+
+Developed with the help of:
+
+VBBV (2025). Matlab program for Joukowski Airfoil (https://www.mathworks.com/matlabcentral/fileexchange/65430-matlab-program-for-joukowski-airfoil), MATLAB Central File Exchange. Retrieved February 9, 2025.
+

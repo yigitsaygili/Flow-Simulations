@@ -49,3 +49,19 @@ Developed with the help of:
 
 VBBV (2025). Matlab program for Joukowski Airfoil (https://www.mathworks.com/matlabcentral/fileexchange/65430-matlab-program-for-joukowski-airfoil), MATLAB Central File Exchange. Retrieved February 9, 2025.
 
+
+## Continuous Internal Pipe Flow Simulation
+
+A computational technique for simulating fluid flow through a pipe on a staggered grid with inflow and outflow. The velocities at various sites (such as between nodes) are offset or shifted in this method since the velocity components—or how quickly the fluid moves—are computed at staggered positions along the grid. This configuration contributes to the simulation's increased accuracy. The "inflow" and "outflow" indicate the points at which fluid enters and leaves the pipe, respectively. Realistic pipe behavior, including how fluid enters, passes through, and exits the pipe system, is frequently modeled using this technique in fluid dynamics models.
+
+Flow in Early Iterations:
+
+![pipe_io1](https://github.com/user-attachments/assets/d5506f61-2c48-4f15-8d77-5e6d1383adea)
+
+Flow in Later Iterations:
+
+![pipe_io2](https://github.com/user-attachments/assets/310aa7f7-33e0-47c7-ad35-43a57a54cd74)
+
+Developed with the help of:
+
+https://www.youtube.com/watch?v=rV8tD2nQfkk

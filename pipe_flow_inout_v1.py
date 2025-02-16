@@ -109,5 +109,84 @@ def main():
             )
         )
 
+        velocity_x_tent[1:-1, 0] = 1.0                              # left edge boundary condition
+        velocity_x_tent[1:-1, -1] = velocity_x_tent[1:-1, -2]       # right edge boundary condition
+        velocity_x_tent[0, :] = -velocity_x_tent[1, :]              # bottom edge boundary condition
+        velocity_x_tent[-1, :] = -velocity_x_tent[-2, :]            # top edge boundary condition
+
+        # UPDATING INTERIOR X VELOCITY WITH MOMENTUM EQUATION
+        diffusion_y = MU * (                                        # definition of diffusion equation
+            (
+                velocity_y_prev[1:-1, 2: ]                          # forward stencil point x direction
+                +
+                velocity_y_prev[2: , 1:-1]                          # backward stencil point x direction
+                +
+                velocity_y_prev[1:-1, :-2]                          # forward stencil point y direction
+                +
+                velocity_y_prev[ :-2, 1:-1]                         # backward stencil point y direction
+                - 4 *
+                velocity_y_prev[1:-1, 1:-1]                         # interior velocity field
+            ) / (
+                cell_lenght**2                                      # cell lenght squared
+            )
+        )
+
+        convection_y = (                                            # definition of convection equation
+            (
+                velocity_x_prev[2:-1, 1: ]                          # prefactor forward based on x velocity
+                +
+                velocity_x_prev[2:-1, :-1]                          # prefactor backward based on x velocity
+                +
+                velocity_x_prev[1:-2, 1: ]                          # prefactor forward based on x velocity
+                +
+                velocity_x_prev[1:-2, :-1]                          # prefactor backward based on x velocity
+            ) / 4
+            *
+            (
+                velocity_y_prev[1:-1, 2: ]                          # forward stencil point x direction
+                -
+                velocity_y_prev[1:-1, :-2]                          # backward stencil point x direction
+            ) / (
+                2 * cell_lenght                                     # cell lenght
+            )
+            +
+            (
+                velocity_y_prev[2: ,1:-1]**2                        # top left stencil point y velocity
+                -
+                velocity_y_prev[ :-2 ,1:-1]**2                      # top right stencil point y velocity
+            ) / (
+                2* cell_lenght                                      # cell lenght
+            )
+        )
+
+        pressure_gradient_y = (                                     # definition of pressure gradient
+            (
+                pressure_prev[2:-1, 1:-1]                           # forward stencil interior pressure in x
+                -
+                pressure_prev[1:-2, 1:-1]                           # backward stencil interior pressure in x
+            ) / (
+                cell_lenght                                         # cell lenght
+            )
+        )
+
+        velocity_y_tent[1:-1, 1:-1] = (                             # interior tentative velocity in x direction
+            velocity_y_prev[1:-1, 1:-1]                             # previous tentative velocity in x direction
+            +
+            TIME_STEP                                               # per time step
+            *
+            (
+                -pressure_gradient_y                                # negative pressure gradient
+                +
+                diffusion_y                                         # effect of diffusion
+                -
+                convection_y                                        # effect of convection
+            )
+        )
+
+        velocity_y_tent[1:-1, 0] = -velocity_y_tent[1:-1, -1]       # left edge boundary condition
+        velocity_y_tent[1:-1, -1] = velocity_y_tent[1:-1, -2]       # right edge boundary condition
+        velocity_y_tent[0, :] = 0.0                                 # bottom edge boundary condition
+        velocity_y_tent[-1, :] = 0.0                                # top edge boundary condition
+
 if __name__ == "__main__":
     main()

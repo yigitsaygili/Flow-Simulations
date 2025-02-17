@@ -188,5 +188,171 @@ def main():
         velocity_y_tent[0, :] = 0.0                                 # bottom edge boundary condition
         velocity_y_tent[-1, :] = 0.0                                # top edge boundary condition
 
+        # COMPUTING DIVERGENCE FOR PRESSURE POISSON PROBLEM
+        divergence = (                                                      # definition of divergence
+            (
+                velocity_x_tent[1:-1, 1:]                                   # tentative velocity interior forward in x direction
+                -
+                velocity_x_tent[1:-1, :-1]                                  # tentative velocity interior backward in x direction
+            ) / (
+                cell_lenght                                                 # cell lenght
+            )
+            +
+            (
+                velocity_y_tent[1: ,1:-1]                                   # tentative velocity interior forward in y direction
+                -
+                velocity_y_tent[ :-1, 1:-1]                                 # tentative velocity interior backward in x direction
+            ) / (
+                cell_lenght                                                 # cell lenght
+            )
+        )
+
+        density = 1                                                         # fluid density
+        pressure_poisson_rhs = divergence * density  / TIME_STEP            # pressure poisson equation right hand side
+
+        # SOLVING PRESSURE CORRECTION POISSON EQUATION
+        pressure_corr_prev = np.zeros_like(pressure_prev)                   # previous pressure correction
+
+        for _ in range(N_POISSON):                                          # iteration for specific poisson iteration count
+            pressure_corr_next = np.zeros_like(pressure_corr_prev)          # next pressure correction
+            pressure_corr_next[1:-1, 1:-1] = 1/4 * (
+                pressure_corr_prev[1:-1, 2: ]                               # interior pressure forward in x direction
+                +
+                pressure_corr_prev[2: , 1:-1]                               # interior pressure forward in y direction
+                +
+                pressure_corr_prev[1:-1, :-2]                               # interior pressure backward in x direction
+                +
+                pressure_corr_prev[ :-2, 1:-1]                              # interior pressure backward in y direction
+                -
+                cell_lenght**2                                              # cell lenght squared
+                *
+                pressure_poisson_rhs                                        # pressure poisson right hand side
+            )
+
+            pressure_corr_next[1:-1, 0] = pressure_corr_next[1:-1, 1]       # homogenous pressure left boundary condition
+            pressure_corr_next[1:-1, -1] = -pressure_corr_next[1:-1, -2]    # homogenous pressure right boundary condition
+            pressure_corr_next[0, :] = pressure_corr_next[1, :]             # homogenous pressure top boundary condition
+            pressure_corr_next[-1, :] = pressure_corr_next[-2, :]           # homogenous pressure bottom boundary condition
+
+            pressure_corr_prev = pressure_corr_next                         # advance in smoothing to enforce incompressibility
+
+        pressure_next = pressure_prev + pressure_corr_next                  # updatingthe pressure
+        
+        # UPDATE VELOCITY
+        pressure_corr_grad_x = (                                            # pressure correction gradient in x
+            (
+                pressure_corr_next[1:-1, 2:-1]                              # interior pressure forward in x direction
+                -
+                pressure_corr_next[1:-1, 1:-2]                              # interior pressure backward in x direction
+            ) / (
+                cell_lenght                                                 # cell lenght
+            )
+        )
+
+        velocity_x_next[1:-1, 1:-1] = (                                     # velocity ıpdate in x direction
+            velocity_x_tent[1:-1, 1:-1]                                     # tentative velocity in x
+            -
+            TIME_STEP                                                       # time step lenght
+            *
+            pressure_corr_grad_x                                            # pressure correction gradient in x direction
+        )
+
+        pressure_corr_grad_y = (                                            # pressure correction gradient in y
+            (
+                pressure_corr_next[2:-1, 1:-1]                              # interior pressure forward in y direction
+                -
+                pressure_corr_next[1:-2, 1:-1]                              # interior pressure backward in y direction
+            ) / (
+                cell_lenght                                                 # cell lenght
+            )
+        )
+
+        velocity_y_next[1:-1, 1:-1] = (                                     # velocity ıpdate in y direction
+            velocity_y_tent[1:-1, 1:-1]                                     # tentative velocity in y
+            -
+            TIME_STEP                                                       # time step lenght
+            *
+            pressure_corr_grad_y                                            # pressure correction gradient in y direction
+        )
+        
+        velocity_x_next[1:-1, 0] = 1.0                              # left edge velocity boundary condition
+        inflow_mass_rate_next = np.sum(velocity_x_next[1:-1, 0])    # inlet total velocity
+        outflow_mass_rate_next = np.sum(velocity_x_next[1:-1, -2])  # outlet total velocity
+        mrr = inflow_mass_rate_next / outflow_mass_rate_next        # mass rate ratio
+        velocity_x_next[1:-1, -1] = velocity_x_next[1:-1, -2] * mrr # right edge velocity boundary condition
+        velocity_x_next[0, :] = -velocity_x_next[1, :]              # bottom edge velocity boundary condition
+        velocity_x_next[-1, :] = -velocity_x_next[-2, :]            # top edge velocity boundary condition
+
+        velocity_y_next[1:-1, 0] = -velocity_y_next[1:-1, -1]       # left edge velocity boundary condition
+        velocity_y_next[1:-1, -1] = velocity_y_next[1:-1, -2]       # right edge velocity boundary condition
+        velocity_y_next[0, :] = 0.0                                 # bottom edge velocity boundary condition
+        velocity_y_next[-1, :] = 0.0                                # top edge velocity boundary condition
+
+        # REPEATING THE ITERATIONS
+        velocity_x_prev = velocity_x_next                           # advance in time for x velocity
+        velocity_y_prev = velocity_y_next                           # advance in time for y velocity
+        pressure_prev = pressure_next                               # advance in time for pressure
+
+        # VISUALIZATION
+        if iter % PLOT_EVERY == 0:
+            velocity_x_vertex_centered = (                          # vetices to be plotted in x
+                (
+                    velocity_x_next[1: , :]                         # left values
+                    +
+                    velocity_x_next[ :-1, :]                        # right values
+                ) / 2                                               # calculating the mean value
+            )
+
+            velocity_y_vertex_centered = (                          # vetices to be plotted in y
+                (
+                    velocity_y_next[:, 1:]                          # top values
+                    +
+                    velocity_y_next[:, :-1]                         # bottom values
+                ) / 2                                               # calculating the mean value
+            )
+
+            plt.contourf(                                           # plotting thr velocity field
+                coordinates_x,
+                coordinates_y,
+                velocity_x_vertex_centered,
+                levels=10,
+                cmap='coolwarm'
+            )
+            plt.colorbar()
+
+            plt.quiver(                                             # plotting the x velocity components
+                coordinates_x[:, ::6],
+                coordinates_y[:, ::6],
+                velocity_x_vertex_centered[:, ::6],
+                velocity_y_vertex_centered[:, ::6],
+                alpha=0.4,
+            )
+
+            plt.plot(                                               # velocity parabola
+                5*cell_lenght + velocity_x_vertex_centered[: ,5],
+                coordinates_y[:, 5],
+                color='white'
+            )
+
+            plt.plot(                                               # velocity parabola
+                40*cell_lenght + velocity_x_vertex_centered[: ,40],
+                coordinates_y[:, 40],
+                color='white'
+            )
+
+            plt.plot(                                               # velocity parabola
+                80*cell_lenght + velocity_x_vertex_centered[: ,80],
+                coordinates_y[:, 80],
+                color='white'
+            )
+
+            plt.title(f'Iteration {iter}/{N_TIME_STEPS}')
+            plt.xlabel("Position along the Pipe")
+            plt.ylabel("Cross section of the Pipe")
+
+            plt.draw()
+            plt.pause(0.05)
+            plt.clf()
+
 if __name__ == "__main__":
     main()
